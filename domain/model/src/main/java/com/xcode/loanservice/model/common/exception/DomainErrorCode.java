@@ -7,8 +7,8 @@ public enum DomainErrorCode {
     INVALID_AMOUNT_RANGE("LOA_004", "The amount is out of range for loan type", 400),
     INVALID_STATUS_CHANGE("LOA_005", "The status change is not allowed", 400),
     APPLICATION_NOT_FOUND("LOA_006", "Application not found", 404),
+    LOANTYPE_NOT_FOUND("LOA_007", "LOAN TYPE NOT FOUND", 404),
     USER_ALREADY_EXISTS("USR_004", "The user already exists", 409),
-    USER_NOT_ALLOWED("USR_005", "The user must be over 18 years old", 400),
     ROLE_NOT_FOUND("ROLE_001", "The role dont exists", 404),
     ROLE_NOT_ALLOWED("ROLE_002", "Role not allowed for user creation", 403);
     
