@@ -10,6 +10,7 @@ import com.xcode.loanservice.model.loanstatus.LoanStatus;
 import com.xcode.loanservice.model.loanstatus.gateways.LoanStatusRepository;
 import com.xcode.loanservice.model.loantype.LoanType;
 import com.xcode.loanservice.model.loantype.gateways.LoanTypeRepository;
+import com.xcode.loanservice.usecase.user.UserVaLidateUseCase;
 import lombok.RequiredArgsConstructor;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
@@ -19,10 +20,12 @@ public class RegisterApplicationUseCase {
     private final ApplicationRepository applicationRepository;
     private final LoanTypeRepository loanTypeRepository;
     private final LoanStatusRepository loanStatusRepository;
+    private final UserVaLidateUseCase userVaLidateUseCase;
     private final TransactionalExecutor txExecutor;
 
     public Mono<Application> execute(Application application) {
-        return loadRequiredEntities(application)
+        return userVaLidateUseCase.validateApplication(application.getDocument())
+                .then(loadRequiredEntities(application))
                 .flatMap(dependencies -> persistAndEnrich(application, dependencies)
                         .as(txExecutor::executeInTransaction));
     }
@@ -45,6 +48,7 @@ public class RegisterApplicationUseCase {
                 .switchIfEmpty(Mono.error(() -> new LoanStatusNotFoundException(LoanStatusName.PENDING_REVIEW.name())))
                 .cache();
     }
+
     private Mono<Application> persistAndEnrich(Application application, Tuple2<LoanType, LoanStatus> dependencies) {
         Application newApplication = createNewApplication(application, dependencies);
         return applicationRepository.save(newApplication)

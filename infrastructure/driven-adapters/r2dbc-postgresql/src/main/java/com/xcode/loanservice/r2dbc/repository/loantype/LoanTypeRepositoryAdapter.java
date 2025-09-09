@@ -31,7 +31,6 @@ public class LoanTypeRepositoryAdapter extends ReactiveAdapterOperations<
                 .map(loanTypeMapper::toDomain)
                 .doOnNext(LoanType -> log.info("LoanType found: {} (Role: {})", LoanType.getIdLoanType(), LoanType.getName()))
                 .doOnError(error -> log.error("Database error finding LoanType with role. ID: {}, Error: {}", id, error.getClass().getSimpleName(), error));
-
     }
 
    /* @Override
