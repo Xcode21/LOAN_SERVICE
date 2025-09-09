@@ -2,7 +2,6 @@ package com.xcode.loanservice.model.loantype;
 
 import com.xcode.loanservice.model.common.exception.InvalidAmountException;
 import com.xcode.loanservice.model.common.exception.MissingRequiredFieldException;
-import com.xcode.loanservice.model.common.exception.ValidateAmountRangeException;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -68,9 +67,7 @@ public class LoanType {
     }
 
 
-    public void validateAmount(BigDecimal amount) {
-        if (amount.compareTo(minAmount) < 0 || amount.compareTo(maxAmount) > 0) {
-            throw new ValidateAmountRangeException(amount);
-        }
+    public boolean validateAmount(BigDecimal amount) {
+        return  (amount.compareTo(minAmount) >= 0 && amount.compareTo(maxAmount) <= 0);
     }
 }

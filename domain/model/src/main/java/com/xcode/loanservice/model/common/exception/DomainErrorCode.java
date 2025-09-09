@@ -8,6 +8,7 @@ public enum DomainErrorCode {
     INVALID_STATUS_CHANGE("LOA_005", "The status change is not allowed", 400),
     APPLICATION_NOT_FOUND("LOA_006", "Application not found", 404),
     LOANTYPE_NOT_FOUND("LOA_007", "LOAN TYPE NOT FOUND", 404),
+    STATUS_NOT_FOUND("LOA_008", "STATUS NOT FOUND", 404),
     USER_ALREADY_EXISTS("USR_004", "The user already exists", 409),
     ROLE_NOT_FOUND("ROLE_001", "The role dont exists", 404),
     ROLE_NOT_ALLOWED("ROLE_002", "Role not allowed for user creation", 403);

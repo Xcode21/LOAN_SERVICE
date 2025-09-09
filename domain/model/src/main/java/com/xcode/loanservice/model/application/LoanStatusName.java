@@ -1,6 +1,6 @@
 package com.xcode.loanservice.model.application;
 
-public enum LoanStatus {
+public enum LoanStatusName {
     PENDING_REVIEW,
     APPROVED,
     REJECTED
