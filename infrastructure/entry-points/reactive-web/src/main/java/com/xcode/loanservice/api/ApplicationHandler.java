@@ -3,7 +3,6 @@ package com.xcode.loanservice.api;
 import com.xcode.loanservice.api.config.ValidationConfig;
 import com.xcode.loanservice.api.dto.ApiResponse;
 import com.xcode.loanservice.api.dto.ApplicationRequest;
-import com.xcode.loanservice.api.dto.ApplicationResponse;
 import com.xcode.loanservice.api.mapper.ApplicationMapper;
 import com.xcode.loanservice.usecase.solicitud.RegisterApplicationUseCase;
 import io.swagger.v3.oas.annotations.Operation;
