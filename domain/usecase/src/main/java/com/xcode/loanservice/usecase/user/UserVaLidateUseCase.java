@@ -11,9 +11,9 @@ public class UserVaLidateUseCase {
 
     private final UserRepository userRepository;
 
-    public Mono<Boolean> validateApplication(String document) {
+    public Mono<Boolean> validateApplication(String document,String token) {
 
-        return userRepository.existsByDocument(document)
+        return userRepository.existsByDocumentWithToken(document,token)
                 .filter(Boolean.TRUE::equals)
                 .switchIfEmpty(Mono.error(new DomainException(DomainErrorCode.USER_NOT_FOUND)));
     }

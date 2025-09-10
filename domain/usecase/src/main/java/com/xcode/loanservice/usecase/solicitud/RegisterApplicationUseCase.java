@@ -23,8 +23,8 @@ public class RegisterApplicationUseCase {
     private final UserVaLidateUseCase userVaLidateUseCase;
     private final TransactionalExecutor txExecutor;
 
-    public Mono<Application> execute(Application application) {
-        return userVaLidateUseCase.validateApplication(application.getDocument())
+    public Mono<Application> execute(Application application,String token) {
+        return userVaLidateUseCase.validateApplication(application.getDocument(),token)
                 .then(loadRequiredEntities(application))
                 .flatMap(dependencies -> persistAndEnrich(application, dependencies)
                         .as(txExecutor::executeInTransaction));

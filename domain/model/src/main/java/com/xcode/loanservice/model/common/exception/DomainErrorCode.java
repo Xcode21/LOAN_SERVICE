@@ -2,6 +2,8 @@ package com.xcode.loanservice.model.common.exception;
 
 public enum DomainErrorCode {
     INVALID_AMOUNT("LOA_001", "The amount isn't valid", 400),
+    ACCESS_DENIED("API_001.1", "Can't create application for other user", 400),
+
     MISSING_REQUIRED_FIELD("LOA_002", "The field is missing", 400),
     INVALID_TERM("LOA_003", "The amount isn't valid", 400),
     INVALID_AMOUNT_RANGE("LOA_004", "The amount is out of range for loan type", 400),

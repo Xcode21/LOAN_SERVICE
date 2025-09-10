@@ -49,4 +49,33 @@ public class UserRestConsumer implements UserRepository {
         return Mono.just(false);
     }
 
+
+    @Override
+    @CircuitBreaker(name = "userservice", fallbackMethod = "validateUserActiveWithTokenFallback")
+    @Retry(name = "userservice")
+    public Mono<Boolean> existsByDocumentWithToken(String documento, String authorizationHeader) {
+        log.info("Validando si usuario {} está activo con token", documento);
+
+        return client
+                .get()
+                .uri("/api/v1/users/by-document/{documento}", documento)
+                .header("Authorization", authorizationHeader)
+                .retrieve()
+                .bodyToMono(UserValidationResponse.class)
+                .timeout(Duration.ofSeconds(3))
+                .map(UserValidationResponse::isActive)
+                .doOnSuccess(isActive -> log.info("Usuario {} activo con token: {}", documento, isActive ? "ACTIVO" : "INACTIVO"))
+                .doOnError(error -> log.warn("Error validando usuario {} con token: {}", documento, error.getMessage()))
+                .onErrorResume(ex -> Mono.error(new Exception("Error validando usuario " + documento)));
+    }
+
+
+
+    public Mono<Boolean> validateUserActiveWithTokenFallback(String documento, String authorizationHeader, Exception ex) {
+        log.warn("Fallback activado para validación con token del usuario: {}. Error: {}", documento, ex.getMessage());
+        if (ex instanceof UserNotFoundException) {
+            return Mono.just(false);
+        }
+        return Mono.just(false);
+    }
 }

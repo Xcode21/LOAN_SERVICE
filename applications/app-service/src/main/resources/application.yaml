@@ -37,6 +37,8 @@ adapter:
   restconsumer:
     timeout: 5000
     url: "http://localhost:8072"
+jwt:
+  secret: mySecretKey123456789012345678901234567890
 resilience4j:
   circuitbreaker:
     instances:
