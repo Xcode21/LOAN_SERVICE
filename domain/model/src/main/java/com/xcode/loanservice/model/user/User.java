@@ -28,4 +28,10 @@ public class User {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    public static User createWebClient(String email,Double salaryBase){
+        return User.builder()
+                .email(email.trim().toLowerCase())
+                .salaryBase(salaryBase)
+                .build();
+    }
 }

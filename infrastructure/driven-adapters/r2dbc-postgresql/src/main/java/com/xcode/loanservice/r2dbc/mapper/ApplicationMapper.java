@@ -6,7 +6,13 @@ import com.xcode.loanservice.model.loanstatus.LoanStatus;
 import com.xcode.loanservice.model.loantype.LoanType;
 import com.xcode.loanservice.r2dbc.dto.ApplicationWithLoanTypeDTO;
 import com.xcode.loanservice.r2dbc.entity.ApplicationEntity;
+import io.r2dbc.spi.Row;
+import io.r2dbc.spi.RowMetadata;
 import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Component
 public class ApplicationMapper {
@@ -71,6 +77,23 @@ public class ApplicationMapper {
                 dto.createdAt(),
                 dto.updatedAt()
         );
+    }
+
+    public Application map(Row row, RowMetadata meta) {
+        return Application.builder()
+                .idApplication(row.get("id", UUID.class))
+                .amount(row.get("monto", BigDecimal.class))
+                .term(row.get("plazo", Integer.class))
+                .email(row.get("email", String.class))
+                .loanType(LoanType.builder()
+                        .name(row.get("tipo_prestamo", String.class))
+                        .interestRate(row.get("tasa_interes", BigDecimal.class))
+                        .build())
+                .loanStatus(LoanStatus.builder()
+                        .name(LoanStatusName.valueOf(row.get("estado", String.class)))
+                        .build())
+                .createdAt(row.get("fecha_creacion", LocalDateTime.class))
+                .build();
     }
 
     private Integer mapStatusToInteger(LoanStatusName status) {

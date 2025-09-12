@@ -5,6 +5,7 @@ import com.xcode.loanservice.r2dbc.entity.ApplicationEntity;
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.query.ReactiveQueryByExampleExecutor;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
@@ -26,5 +27,10 @@ public interface ApplicationRepository extends ReactiveCrudRepository<Applicatio
     Mono<ApplicationWithLoanTypeDTO> findByIdProjection(UUID id);
 
     Mono<ApplicationEntity> findById(UUID id);
-    Mono<ApplicationEntity> findAllByDocument(String document);
+    Flux<ApplicationEntity> findAllByDocument(String document);
+
+
+   /* Mono<Long> countPending(Map<String, Object> filtros);
+    Mono<PaginatedResponse<ApplicationEntity>> findPending(ApplicationSeachCriteria criteria, PageRequest pageRequest);
+    Flux<ApplicationEntity> findApproveByEmail(String email);*/
 }

@@ -1,7 +1,9 @@
 package com.xcode.loanservice.consumer;
 
+import com.xcode.loanservice.consumer.dto.UserResponse;
 import com.xcode.loanservice.consumer.dto.UserValidationResponse;
 import com.xcode.loanservice.consumer.exception.UserNotFoundException;
+import com.xcode.loanservice.model.user.User;
 import com.xcode.loanservice.model.user.gateways.UserRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -10,9 +12,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +62,7 @@ public class UserRestConsumer implements UserRepository {
 
         return client
                 .get()
-                .uri("/api/v1/users/by-document/{documento}", documento)
+                .uri("/api/v1/users/by-document/{document}", documento)
                 .header("Authorization", authorizationHeader)
                 .retrieve()
                 .bodyToMono(UserValidationResponse.class)
@@ -69,6 +73,29 @@ public class UserRestConsumer implements UserRepository {
                 .onErrorResume(ex -> Mono.error(new Exception("Error validando usuario " + documento)));
     }
 
+    @Override
+    @CircuitBreaker(name = "userservice", fallbackMethod = "findSalaryByEmailFallback")
+    @Retry(name = "userservice")
+    @TimeLimiter(name = "userservice")
+    public Flux<User> findSalaryByEmail(Set<String> emails) {
+        log.info("Fetching salary data for {} users", emails.size());
+        
+        return client.post()
+                .uri("/api/v1/users/salary")
+                .bodyValue(emails)
+                .retrieve()
+                .bodyToFlux(UserResponse.class)
+                .timeout(Duration.ofSeconds(10))
+                .map(userResponse -> User.createWebClient(userResponse.getEmail(), userResponse.getSalaryBase()))
+                .doOnNext(user -> log.debug("Retrieved user data for email: {}", user.getEmail()))
+                .doOnComplete(() -> log.info("Successfully fetched salary data for all users"))
+                .doOnError(error -> log.warn("Error fetching batch salary data: {}", error.getMessage()));
+    }
+    
+    public Flux<User> findSalaryByEmailFallback(Set<String> emails, Exception ex) {
+        log.warn("Fallback activated for salary fetch. Emails: {}, Error: {}", emails.size(), ex.getMessage());
+        return Flux.empty();
+    }
 
 
     public Mono<Boolean> validateUserActiveWithTokenFallback(String documento, String authorizationHeader, Exception ex) {

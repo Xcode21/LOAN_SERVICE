@@ -129,11 +129,16 @@ public class Application {
     }
 
     public BigDecimal calculateMonthlyPayment() {
-        BigDecimal monthlyInterestRate = loanType.getInterestRate()
-                .divide(BigDecimal.valueOf(12), RoundingMode.HALF_UP);
-        BigDecimal onePlusRPowerN = (BigDecimal.ONE.add(monthlyInterestRate)).pow(term);
-        return amount.multiply(monthlyInterestRate).multiply(onePlusRPowerN)
-                .divide(onePlusRPowerN.subtract(BigDecimal.ONE), RoundingMode.HALF_UP);
+
+        if (loanType.getInterestRate().equals(BigDecimal.ZERO)) {
+            return amount.divide(BigDecimal.valueOf(term), 2, RoundingMode.HALF_UP);
+        }
+        BigDecimal monthlyRate = loanType.getInterestRate().divide(BigDecimal.valueOf(1200), 10, RoundingMode.HALF_UP);
+        BigDecimal factor = BigDecimal.ONE.add(monthlyRate).pow(term);
+        BigDecimal numerator = monthlyRate.multiply(factor);
+        BigDecimal denominator = factor.subtract(BigDecimal.ONE);
+
+        return amount.multiply(numerator.divide(denominator, 2, RoundingMode.HALF_UP));
 
     }
 

@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/api/v1/application").hasRole("CLIENTE")
-                        //.pathMatchers("/api/solicitud/pendientes").hasRole("ASESOR")
+                        .pathMatchers("/api/v1/application/pending").hasAnyRole("ADMIN","ASESOR")
                         .anyExchange().authenticated()
                 )
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
